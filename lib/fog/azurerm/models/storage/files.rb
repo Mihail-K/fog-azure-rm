@@ -22,12 +22,8 @@ module Fog
             name = directory
             directory = self.directory
           end
+          directory = directory.key if directory.is_a?(Fog::Storage::AzureRM::Directory)
           File.new(service: service, directory: directory, key: name)
-        end
-
-        def new(attributes = {})
-          requires :directory
-          super({ directory: directory }.merge!(attributes))
         end
       end
     end
