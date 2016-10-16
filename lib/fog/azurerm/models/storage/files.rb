@@ -10,20 +10,24 @@ module Fog
         attribute :directory
 
         def all(options = { metadata: true })
-          files = []
-          service.list_blobs(directory, options).each do |blob|
-            hash = File.parse blob
-            hash['directory'] = directory
-            files << hash
+          files = service.list_blobs(directory, options).map do |blob|
+            File.parse(blob).merge!('directory' => directory)
           end
           load files
         end
 
-        def get(directory, name)
-          file = File.new(service: service)
-          file.directory = directory
-          file.key = name
-          file
+        def get(directory, name = nil)
+          if name.nil?
+            requires :directory
+            name = directory
+            directory = self.directory
+          end
+          File.new(service: service, directory: directory, key: name)
+        end
+
+        def new(attributes = {})
+          requires :directory
+          super({ directory: directory }.merge!(attributes))
         end
       end
     end
