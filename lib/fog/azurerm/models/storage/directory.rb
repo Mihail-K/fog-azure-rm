@@ -34,6 +34,10 @@ module Fog
           service.delete_container key, options
         end
 
+        def files
+          @files ||= Fog::Storage::AzureRM::Files.new(directory: self, service: service)
+        end
+
         def self.parse(container)
           hash = {}
           if container.is_a? Hash
